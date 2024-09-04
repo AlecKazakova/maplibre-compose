@@ -34,4 +34,5 @@ maplibre = { module = "org.maplibre.gl:android-sdk", version = "10.2.0" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+publish = { id = "com.vanniktech.maven.publish", version = "0.29.0" }
 spotless = { id = "com.diffplug.spotless", version = "6.22.0" }
