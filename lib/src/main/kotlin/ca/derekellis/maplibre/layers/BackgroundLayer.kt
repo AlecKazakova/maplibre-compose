@@ -7,7 +7,7 @@ import ca.derekellis.maplibre.MapScope
 import ca.derekellis.maplibre.compose.LayerNode
 import ca.derekellis.maplibre.compose.MapNodeApplier
 import ca.derekellis.maplibre.sources.SourceDsl
-import com.mapbox.mapboxsdk.style.layers.BackgroundLayer as SdkBackgroundLayer
+import org.maplibre.android.style.layers.BackgroundLayer as SdkBackgroundLayer
 
 @Composable
 @SourceDsl

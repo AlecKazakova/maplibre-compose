@@ -8,13 +8,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import ca.derekellis.maplibre.layers.LayerDsl
 import ca.derekellis.maplibre.layers.LayerScope
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.CircleLayer
-import com.mapbox.mapboxsdk.style.layers.Property.CIRCLE_PITCH_ALIGNMENT
-import com.mapbox.mapboxsdk.style.layers.Property.CIRCLE_PITCH_SCALE
-import com.mapbox.mapboxsdk.style.layers.Property.CIRCLE_TRANSLATE_ANCHOR
-import com.mapbox.mapboxsdk.style.layers.Property.VISIBILITY
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.layers.CircleLayer
+import org.maplibre.android.style.layers.Property.CIRCLE_PITCH_ALIGNMENT
+import org.maplibre.android.style.layers.Property.CIRCLE_PITCH_SCALE
+import org.maplibre.android.style.layers.Property.CIRCLE_TRANSLATE_ANCHOR
+import org.maplibre.android.style.layers.Property.VISIBILITY
+import org.maplibre.android.style.layers.PropertyFactory
 
 private typealias CircleLayerScope = LayerScope<CircleLayer>
 

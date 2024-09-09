@@ -23,9 +23,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import ca.derekellis.maplibre.compose.applySources
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
+import org.maplibre.android.maps.MapView
+import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
 
 @Composable
 public fun MapLibreMap(
@@ -41,7 +41,7 @@ public fun MapLibreMap(
   val density = LocalDensity.current
   val layoutDirection = LocalLayoutDirection.current
 
-  var mapRef: MapboxMap? by remember { mutableStateOf(null) }
+  var mapRef: MapLibreMap? by remember { mutableStateOf(null) }
   var styleRef: Style? by remember { mutableStateOf(null) }
 
   LaunchedEffect(mapRef, styleRef) {

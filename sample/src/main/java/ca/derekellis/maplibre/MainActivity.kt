@@ -13,7 +13,7 @@ import ca.derekellis.maplibre.samples.MapCallbackSample
 import ca.derekellis.maplibre.samples.NoStyleSample
 import ca.derekellis.maplibre.samples.StylesSample
 import ca.derekellis.maplibre.ui.theme.MapLibreComposeTheme
-import com.mapbox.mapboxsdk.Mapbox
+import org.maplibre.android.MapLibre
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     // Initialize MapLibre
-    Mapbox.getInstance(this)
+    MapLibre.getInstance(this)
 
     setContent {
       val screen by screenFlow.collectAsState()

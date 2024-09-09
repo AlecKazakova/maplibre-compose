@@ -6,11 +6,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.camera.CameraUpdate
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.MapboxMap.OnCameraIdleListener
+import org.maplibre.android.camera.CameraPosition
+import org.maplibre.android.camera.CameraUpdate
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.MapLibreMap.OnCameraIdleListener
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.time.Duration
@@ -23,14 +23,14 @@ public class MapState(
   private val initialTilt: Double = 0.0,
   private val initialPadding: DoubleArray = doubleArrayOf(0.0, 0.0, 0.0, 0.0),
 ) {
-  private var _map: MapboxMap? = null
+  private var _map: MapLibreMap? = null
     get() {
       checkNotNull(field) { "State has not been bound to a map! Did you remember to pass the state into a MapLibreMap?" }
       return field
     }
-  private val map get(): MapboxMap = _map!!
+  private val map get(): MapLibreMap = _map!!
 
-  internal fun bindMap(map: MapboxMap) {
+  internal fun bindMap(map: MapLibreMap) {
     this._map = map
     map.cameraPosition = CameraPosition.Builder()
       .target(initialTarget)
@@ -73,7 +73,7 @@ public class MapState(
     duration: Duration = 300.milliseconds,
   ): Unit = doAnimation {
     val cameraUpdate = object : CameraUpdate {
-      override fun getCameraPosition(mapboxMap: MapboxMap): CameraPosition =
+      override fun getCameraPosition(maplibreMap: MapLibreMap): CameraPosition =
         CameraPosition.Builder()
           .target(target)
           .zoom(zoom)

@@ -7,8 +7,8 @@ import ca.derekellis.maplibre.compose.LayerNode
 import ca.derekellis.maplibre.compose.MapNodeApplier
 import ca.derekellis.maplibre.sources.SourceDsl
 import ca.derekellis.maplibre.sources.SourceScope
-import com.mapbox.mapboxsdk.style.layers.CircleLayer
-import com.mapbox.mapboxsdk.style.layers.CircleLayer as SdkCircleLayer
+import org.maplibre.android.style.layers.CircleLayer
+import org.maplibre.android.style.layers.CircleLayer as SdkCircleLayer
 
 @Composable
 @SourceDsl

@@ -1,7 +1,7 @@
 package ca.derekellis.maplibre.compose
 
-import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.sources.Source
+import org.maplibre.android.style.layers.Layer
+import org.maplibre.android.style.sources.Source
 
 internal sealed interface MapNode
 

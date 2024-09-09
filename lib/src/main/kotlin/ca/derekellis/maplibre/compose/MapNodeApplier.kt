@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.Recomposer
 import ca.derekellis.maplibre.MapScope
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
+import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -94,7 +94,7 @@ internal class MapNodeApplier(private val style: Style) : AbstractApplier<MapNod
   }
 }
 
-internal fun CoroutineScope.applySources(map: MapboxMap, style: Style, content: @Composable MapScope.() -> Unit) {
+internal fun CoroutineScope.applySources(map: MapLibreMap, style: Style, content: @Composable MapScope.() -> Unit) {
   val recomposer = Recomposer(coroutineContext)
   val composition = Composition(MapNodeApplier(style), recomposer)
 
@@ -103,7 +103,7 @@ internal fun CoroutineScope.applySources(map: MapboxMap, style: Style, content: 
   }
 
   val mapScope = object : MapScope {
-    override val map: MapboxMap = map
+    override val map: MapLibreMap = map
 
     override val style: Style = style
   }

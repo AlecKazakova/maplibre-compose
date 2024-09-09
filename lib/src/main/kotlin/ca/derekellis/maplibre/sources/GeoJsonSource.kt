@@ -8,7 +8,7 @@ import ca.derekellis.maplibre.MapScope
 import ca.derekellis.maplibre.compose.MapNodeApplier
 import ca.derekellis.maplibre.compose.SourceNode
 import java.net.URI
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource as SdkGeoJsonSource
+import org.maplibre.android.style.sources.GeoJsonSource as SdkGeoJsonSource
 
 @Composable
 @MapDsl

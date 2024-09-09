@@ -2,7 +2,7 @@ package ca.derekellis.maplibre
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import com.mapbox.mapboxsdk.geometry.LatLng
+import org.maplibre.android.geometry.LatLng
 
 @Composable
 public fun MapScope.MapCallback(
