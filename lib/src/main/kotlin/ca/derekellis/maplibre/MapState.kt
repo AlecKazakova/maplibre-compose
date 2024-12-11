@@ -6,32 +6,39 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdate
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMap.OnCameraIdleListener
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 public class MapState(
-  private val initialTarget: LatLng = LatLng(),
-  private val initialZoom: Double = 0.0,
-  private val initialBearing: Double = 0.0,
-  private val initialTilt: Double = 0.0,
-  private val initialPadding: DoubleArray = doubleArrayOf(0.0, 0.0, 0.0, 0.0),
+  private var initialTarget: LatLng = LatLng(),
+  private var initialZoom: Double = 0.0,
+  private var initialBearing: Double = 0.0,
+  private var initialTilt: Double = 0.0,
+  private var initialPadding: DoubleArray = doubleArrayOf(0.0, 0.0, 0.0, 0.0),
 ) {
-  private var _map: MapLibreMap? = null
-    get() {
-      checkNotNull(field) { "State has not been bound to a map! Did you remember to pass the state into a MapLibreMap?" }
-      return field
-    }
-  private val map get(): MapLibreMap = _map!!
+  private val mapState = MutableStateFlow<MapLibreMap?>(null)
+
+  private suspend inline fun withMap(block: (MapLibreMap) -> Unit) {
+    val map = mapState.value ?: mapState.filterNotNull().first()
+    block(map)
+  }
 
   internal fun bindMap(map: MapLibreMap) {
-    this._map = map
+    check(this.mapState.value == null) {
+      "Cannot rebind MapState after already being bound!"
+    }
+
+    mapState.value = map
     map.cameraPosition = CameraPosition.Builder()
       .target(initialTarget)
       .zoom(initialZoom)
@@ -42,27 +49,43 @@ public class MapState(
   }
 
   public var target: LatLng
-    get() = map.cameraPosition.target ?: LatLng()
+    get() = mapState.value?.cameraPosition?.target ?: initialTarget
     set(value) {
-      map.cameraPosition = CameraPosition.Builder().target(value).build()
+      if (mapState.value != null) {
+        mapState.value?.cameraPosition = CameraPosition.Builder().target(value).build()
+      } else {
+        initialTarget = value
+      }
     }
 
   public var zoom: Double
-    get() = map.cameraPosition.zoom
+    get() = mapState.value?.cameraPosition?.zoom ?: initialZoom
     set(value) {
-      map.cameraPosition = CameraPosition.Builder().zoom(value).build()
+      if (mapState.value != null) {
+        mapState.value?.cameraPosition = CameraPosition.Builder().zoom(value).build()
+      } else {
+        initialZoom = value
+      }
     }
 
   public var bearing: Double
-    get() = map.cameraPosition.bearing
+    get() = mapState.value?.cameraPosition?.bearing ?: initialBearing
     set(value) {
-      map.cameraPosition = CameraPosition.Builder().bearing(value).build()
+      if (mapState.value != null) {
+        mapState.value?.cameraPosition = CameraPosition.Builder().bearing(value).build()
+      } else {
+        initialBearing = value
+      }
     }
 
   public var tilt: Double
-    get() = map.cameraPosition.tilt
+    get() = mapState.value?.cameraPosition?.tilt ?: initialTilt
     set(value) {
-      map.cameraPosition = CameraPosition.Builder().tilt(value).build()
+      if (mapState.value != null) {
+        mapState.value?.cameraPosition = CameraPosition.Builder().tilt(value).build()
+      } else {
+        initialTilt = value
+      }
     }
 
   public suspend fun easeTo(
@@ -71,21 +94,23 @@ public class MapState(
     bearing: Double = this.bearing,
     tilt: Double = this.tilt,
     duration: Duration = 300.milliseconds,
-  ): Unit = doAnimation {
-    val cameraUpdate = object : CameraUpdate {
-      override fun getCameraPosition(maplibreMap: MapLibreMap): CameraPosition =
-        CameraPosition.Builder()
-          .target(target)
-          .zoom(zoom)
-          .bearing(bearing)
-          .tilt(tilt)
-          .build()
-    }
+  ): Unit = withMap { map ->
+    doAnimation(map) {
+      val cameraUpdate = object : CameraUpdate {
+        override fun getCameraPosition(maplibreMap: MapLibreMap): CameraPosition =
+          CameraPosition.Builder()
+            .target(target)
+            .zoom(zoom)
+            .bearing(bearing)
+            .tilt(tilt)
+            .build()
+      }
 
-    map.easeCamera(cameraUpdate, duration.inWholeMilliseconds.toInt())
+      map.easeCamera(cameraUpdate, duration.inWholeMilliseconds.toInt())
+    }
   }
 
-  private suspend fun doAnimation(block: () -> Unit) {
+  private suspend fun doAnimation(map: MapLibreMap, block: () -> Unit) {
     var listener: OnCameraIdleListener
     var resumed = false
 

@@ -13,8 +13,8 @@ import ca.derekellis.maplibre.samples.MapCallbackSample
 import ca.derekellis.maplibre.samples.NoStyleSample
 import ca.derekellis.maplibre.samples.StylesSample
 import ca.derekellis.maplibre.ui.theme.MapLibreComposeTheme
-import org.maplibre.android.MapLibre
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.maplibre.android.MapLibre
 
 class MainActivity : ComponentActivity() {
   private val screenFlow = MutableStateFlow<Screen>(Screen.Home)

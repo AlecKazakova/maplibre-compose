@@ -5,10 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.Recomposer
 import ca.derekellis.maplibre.MapScope
-import org.maplibre.android.maps.MapLibreMap
-import org.maplibre.android.maps.Style
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
 
 internal class MapNodeApplier(private val style: Style) : AbstractApplier<MapNode>(RootNode()) {
 
