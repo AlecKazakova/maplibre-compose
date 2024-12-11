@@ -3,6 +3,7 @@
 package ca.derekellis.maplibre.styles
 
 import android.annotation.SuppressLint
+import androidx.annotation.ColorInt
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -32,7 +33,7 @@ public fun CircleLayerScope.circleBlur(expression: Expression) {
 
 @Composable
 @LayerDsl
-public fun CircleLayerScope.circleColor(color: Int) {
+public fun CircleLayerScope.circleColor(@ColorInt color: Int) {
   layer.withProperties(PropertyFactory.circleColor(color))
 }
 
