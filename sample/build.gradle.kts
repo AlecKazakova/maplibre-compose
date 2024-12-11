@@ -56,6 +56,8 @@ dependencies {
   implementation(libs.lifecycle.runtime)
   implementation(libs.activity.compose)
   implementation(platform(libs.compose.bom))
+  implementation(libs.coil.compose)
+  implementation(libs.coil.okhttp)
   implementation(libs.ui)
   implementation(libs.ui.graphics)
   implementation(libs.ui.tooling.preview)

@@ -34,3 +34,28 @@ public fun MapScope.GeoJsonSource(
     content = { scope.layers() },
   )
 }
+
+@Composable
+@MapDsl
+public fun MapScope.GeoJsonSource(
+  id: String,
+  geojson: String,
+  layers: @Composable SourceScope.() -> Unit,
+) {
+  val scope = remember {
+    object : SourceScope, MapScope by this {
+      override val sourceId: String get() = id
+    }
+  }
+
+  ComposeNode<SourceNode, MapNodeApplier>(
+    factory = { SourceNode(id, SdkGeoJsonSource(id, geojson)) },
+    update = {
+      // TODO: Update ID
+      set(style) {
+        style.getSourceAs<SdkGeoJsonSource>(id)?.setGeoJson(geojson)
+      }
+    },
+    content = { scope.layers() },
+  )
+}

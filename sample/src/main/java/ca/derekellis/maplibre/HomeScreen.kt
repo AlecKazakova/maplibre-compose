@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ca.derekellis.maplibre.samples.RemoteIconSample
 
 @Composable
 fun HomeScreen(navigator: Navigator) {
@@ -41,6 +42,9 @@ fun HomeScreen(navigator: Navigator) {
       }
       Button(onClick = { navigator.goTo(Screen.MapCallbackSample) }) {
         Text(text = "Map Callback Sample")
+      }
+      Button(onClick = { navigator.goTo(Screen.RemoteIconSample) }) {
+        Text(text = "Remote Icon Sample")
       }
     }
   }
