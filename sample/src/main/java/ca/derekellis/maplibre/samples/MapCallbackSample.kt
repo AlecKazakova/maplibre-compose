@@ -2,7 +2,6 @@ package ca.derekellis.maplibre.samples
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,22 +19,23 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import ca.derekellis.maplibre.DemoStyle
-import ca.derekellis.maplibre.MapCallback
 import ca.derekellis.maplibre.MapLibreMap
 import ca.derekellis.maplibre.Navigator
+import ca.derekellis.maplibre.OnCameraIdle
+import ca.derekellis.maplibre.OnCameraMove
+import ca.derekellis.maplibre.OnCameraMoveCanceled
+import ca.derekellis.maplibre.OnMapClick
 import ca.derekellis.maplibre.Screen
 import ca.derekellis.maplibre.rememberMapState
 import java.time.Duration
 import java.util.Date
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MapCallbackSample(navigator: Navigator) {
   val start = remember { Date() }
@@ -55,7 +55,7 @@ fun MapCallbackSample(navigator: Navigator) {
         ),
       )
       if (eventLog.size > 50) {
-        eventLog.removeFirst()
+        eventLog.removeAt(0)
       }
     }
 
@@ -71,15 +71,13 @@ fun MapCallbackSample(navigator: Navigator) {
         contentPadding = innerPadding,
         logoPadding = PaddingValues(4.dp),
       ) {
-        MapCallback(
-          onCameraIdle = { addLog("onCameraIdle") },
-          onCameraMove = { addLog("onCameraMove") },
-          onCameraMoveCancel = { addLog("onCameraMoveCancel") },
-          onMapClick = {
-            addLog("onMapClick(%.4f, %.4f)".format(it.longitude, it.latitude))
-            true
-          },
-        )
+        OnCameraIdle { addLog("onCameraIdle") }
+        OnCameraMove { addLog("onCameraMove") }
+        OnCameraMoveCanceled { addLog("onCameraMoveCanceled") }
+        OnMapClick {
+          addLog("onMapClick(%.4f, %.4f)".format(it.longitude, it.latitude))
+          return@OnMapClick true
+        }
       }
 
       Surface(

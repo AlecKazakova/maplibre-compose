@@ -2,48 +2,63 @@ package ca.derekellis.maplibre
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.maps.MapLibreMap.OnCameraIdleListener
+import org.maplibre.android.maps.MapLibreMap.OnCameraMoveCanceledListener
+import org.maplibre.android.maps.MapLibreMap.OnCameraMoveListener
+import org.maplibre.android.maps.MapLibreMap.OnMapClickListener
+import org.maplibre.android.maps.MapView.OnStyleImageMissingListener
 
 @Composable
-public fun MapScope.MapCallback(
-  onCameraIdle: (() -> Unit)? = null,
-  onCameraMove: (() -> Unit)? = null,
-  onCameraMoveCancel: (() -> Unit)? = null,
-  onMapClick: ((LatLng) -> Boolean)? = null,
-) {
-  DisposableEffect(onCameraIdle) {
-    onCameraIdle ?: return@DisposableEffect onDispose { }
-    map.addOnCameraIdleListener(onCameraIdle)
+public fun MapScope.OnCameraIdle(listener: OnCameraIdleListener) {
+  DisposableEffect(listener) {
+    map.addOnCameraIdleListener(listener)
 
     onDispose {
-      map.removeOnCameraIdleListener(onCameraIdle)
+      map.removeOnCameraIdleListener(listener)
     }
   }
+}
 
-  DisposableEffect(onCameraMove) {
-    onCameraMove ?: return@DisposableEffect onDispose { }
-    map.addOnCameraMoveListener(onCameraMove)
+@Composable
+public fun MapScope.OnCameraMove(listener: OnCameraMoveListener) {
+  DisposableEffect(listener) {
+    map.addOnCameraMoveListener(listener)
 
     onDispose {
-      map.removeOnCameraMoveListener(onCameraMove)
+      map.removeOnCameraMoveListener(listener)
     }
   }
+}
 
-  DisposableEffect(onCameraMoveCancel) {
-    onCameraMoveCancel ?: return@DisposableEffect onDispose { }
-    map.addOnCameraMoveCancelListener(onCameraMoveCancel)
+@Composable
+public fun MapScope.OnCameraMoveCanceled(listener: OnCameraMoveCanceledListener) {
+  DisposableEffect(listener) {
+    map.addOnCameraMoveCancelListener(listener)
 
     onDispose {
-      map.removeOnCameraMoveCancelListener(onCameraMoveCancel)
+      map.removeOnCameraMoveCancelListener(listener)
     }
   }
+}
 
-  DisposableEffect(onMapClick) {
-    onMapClick ?: return@DisposableEffect onDispose { }
-    map.addOnMapClickListener(onMapClick)
+@Composable
+public fun MapScope.OnMapClick(listener: OnMapClickListener) {
+  DisposableEffect(listener) {
+    map.addOnMapClickListener(listener)
 
     onDispose {
-      map.removeOnMapClickListener(onMapClick)
+      map.removeOnMapClickListener(listener)
+    }
+  }
+}
+
+@Composable
+public fun MapScope.OnStyleImageMissing(listener: OnStyleImageMissingListener) {
+  DisposableEffect(listener) {
+    mapViewCallbacks.addOnStyleImageMissingListener(listener)
+
+    onDispose {
+      mapViewCallbacks.removeOnStyleImageMissingListener(listener)
     }
   }
 }

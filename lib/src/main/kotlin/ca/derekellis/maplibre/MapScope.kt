@@ -8,4 +8,6 @@ public interface MapScope {
   public val map: MapLibreMap
 
   public val style: Style
+
+  public val mapViewCallbacks: MapViewCallbacks
 }

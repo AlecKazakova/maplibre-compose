@@ -43,10 +43,11 @@ public fun MapLibreMap(
 
   var mapRef: MapLibreMap? by remember { mutableStateOf(null) }
   var styleRef: Style? by remember { mutableStateOf(null) }
+  var mapViewCallbacksRef: MapViewCallbacks? by remember { mutableStateOf(null) }
 
-  LaunchedEffect(mapRef, styleRef) {
-    if (mapRef != null && styleRef != null) {
-      applySources(mapRef!!, styleRef!!, content)
+  LaunchedEffect(mapRef, styleRef, mapViewCallbacksRef) {
+    if (mapRef != null && styleRef != null && mapViewCallbacksRef != null) {
+      applySources(mapRef!!, styleRef!!, mapViewCallbacksRef!!, content)
     }
   }
 
@@ -92,6 +93,8 @@ public fun MapLibreMap(
           mapRef = map
           state.bindMap(map)
         }
+
+        mapViewCallbacksRef = MapViewCallbacksImpl(view)
       }.apply { manageLifecycle() }
     },
     update = { _ -> },
@@ -154,4 +157,14 @@ public fun computeCompassPadding(contentPadding: PaddingValues): PaddingValues {
     end = 4.dp + contentPadding.calculateEndPadding(LocalLayoutDirection.current),
     bottom = 4.dp + contentPadding.calculateBottomPadding(),
   )
+}
+
+private class MapViewCallbacksImpl(private val mapView: MapView) : MapViewCallbacks {
+  override fun addOnStyleImageMissingListener(listener: MapView.OnStyleImageMissingListener) {
+    mapView.addOnStyleImageMissingListener(listener)
+  }
+
+  override fun removeOnStyleImageMissingListener(listener: MapView.OnStyleImageMissingListener) {
+    mapView.removeOnStyleImageMissingListener(listener)
+  }
 }
