@@ -117,15 +117,6 @@ public class MapState(
     }
   }
 
-  public suspend fun easeTo(
-    cameraUpdate: CameraUpdate,
-    duration: Duration = 300.milliseconds,
-  ): Unit = withMap { map ->
-    doAnimation(map) {
-      map.easeCamera(cameraUpdate, duration.inWholeMilliseconds.toInt())
-    }
-  }
-
   private suspend fun doAnimation(map: MapLibreMap, block: () -> Unit) {
     var listener: OnCameraIdleListener
     var resumed = false
