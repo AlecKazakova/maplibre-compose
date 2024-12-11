@@ -1,5 +1,7 @@
 package ca.derekellis.maplibre
 
+import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.View
 import android.view.View.OnAttachStateChangeListener
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,8 +15,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
@@ -23,6 +27,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import ca.derekellis.maplibre.compose.applySources
+import coil3.ImageLoader
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import coil3.request.ImageRequest
+import coil3.toBitmap
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.Style
@@ -84,6 +95,20 @@ public fun MapLibreMap(
     }
   }
 
+  val context = LocalContext.current
+  val imageLoader = remember {
+    ImageLoader.Builder(context)
+      .components {
+        add(
+          OkHttpNetworkFetcherFactory(
+            callFactory = { OkHttpClient() }
+          )
+        )
+      }
+      .build()
+  }
+  val scope = rememberCoroutineScope()
+
   AndroidView(
     modifier = modifier,
     factory = { context ->
@@ -91,6 +116,26 @@ public fun MapLibreMap(
         view.getMapAsync { map ->
           mapRef = map
           state.bindMap(map)
+        }
+        view.addOnStyleImageMissingListener { imageId ->
+          // Set a default placeholder
+          styleRef?.addImageAsync(imageId, BitmapFactory.decodeResource(context.resources, R.drawable.default_icon))
+
+          scope.launch(start = CoroutineStart.UNDISPATCHED) {
+            val request = ImageRequest.Builder(context)
+              // The image ID is a regular string, but since I'm using URLs here I can just pass them in
+              // we should implement a way to filter out non-image URIs before trying to load them via Coil
+              // e.g. with a custom protocol which we can map to http(s) before trying to load it
+              .data(imageId)
+              .build()
+
+            val result = imageLoader.execute(request)
+            val bitmap = result.image?.toBitmap() ?: return@launch
+
+            bitmap.density = context.resources.displayMetrics.densityDpi
+            styleRef?.addImageAsync(imageId, bitmap)
+          }
+          Log.w("StyleImageMissing", "Missing style image! '$imageId'")
         }
       }.apply { manageLifecycle() }
     },

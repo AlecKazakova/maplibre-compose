@@ -42,6 +42,9 @@ fun HomeScreen(navigator: Navigator) {
       Button(onClick = { navigator.goTo(Screen.MapCallbackSample) }) {
         Text(text = "Map Callback Sample")
       }
+      Button(onClick = { navigator.goTo(Screen.RemoteIconSample) }) {
+        Text(text = "Remote Icon Sample")
+      }
     }
   }
 }

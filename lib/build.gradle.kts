@@ -37,4 +37,7 @@ dependencies {
   implementation(platform(libs.compose.bom))
   implementation(libs.compose.foundation)
   implementation(libs.compose.runtime)
+
+  implementation(libs.coil.compose)
+  implementation(libs.coil.okhttp)
 }

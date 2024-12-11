@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import ca.derekellis.maplibre.samples.BasicSample
 import ca.derekellis.maplibre.samples.MapCallbackSample
 import ca.derekellis.maplibre.samples.NoStyleSample
+import ca.derekellis.maplibre.samples.RemoteIconSample
 import ca.derekellis.maplibre.samples.StylesSample
 import ca.derekellis.maplibre.ui.theme.MapLibreComposeTheme
 import org.maplibre.android.MapLibre
@@ -54,6 +55,7 @@ class MainActivity : ComponentActivity() {
             Screen.StylesSample -> StylesSample(navigator)
             Screen.NoStylesSample -> NoStyleSample(navigator)
             Screen.MapCallbackSample -> MapCallbackSample(navigator)
+            Screen.RemoteIconSample -> RemoteIconSample(navigator)
           }
         }
       }
