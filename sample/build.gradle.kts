@@ -62,6 +62,7 @@ dependencies {
   implementation(libs.ui.graphics)
   implementation(libs.ui.tooling.preview)
   implementation(libs.material3)
+  implementation(libs.maplibre.turf)
   implementation(project(":lib"))
 
   testImplementation(libs.junit)

@@ -26,6 +26,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,11 +41,21 @@ import ca.derekellis.maplibre.MapLibreMap
 import ca.derekellis.maplibre.Navigator
 import ca.derekellis.maplibre.Screen
 import ca.derekellis.maplibre.layers.CircleLayer
+import ca.derekellis.maplibre.layers.FillLayer
 import ca.derekellis.maplibre.rememberMapState
 import ca.derekellis.maplibre.sources.GeoJsonSource
 import ca.derekellis.maplibre.styles.circleColor
 import ca.derekellis.maplibre.styles.circleOpacity
 import ca.derekellis.maplibre.styles.circleRadius
+import ca.derekellis.maplibre.styles.fillColor
+import ca.derekellis.maplibre.styles.fillOpacity
+import ca.derekellis.maplibre.styles.fillOutlineColor
+import kotlinx.coroutines.delay
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.geometry.LatLngBounds
+import org.maplibre.android.geometry.LatLngBounds.Companion
+import org.maplibre.geojson.Polygon
+import org.maplibre.turf.TurfMeasurement
 import java.net.URI
 import kotlin.math.round
 
@@ -54,6 +65,8 @@ fun StylesSample(navigator: Navigator) {
   Scaffold(topBar = {
     SampleAppBar(title = "Styles Sample", onNavigate = { navigator.goTo(Screen.Home) })
   }) { innerPadding ->
+    val bounds = remember { TurfMeasurement.bbox(PORTLAND_BOUNDS_GEOMETRY) }
+
     val mapState = rememberMapState(padding = innerPadding)
     var showSettings by remember { mutableStateOf(false) }
     var radiusSetting by remember { mutableFloatStateOf(5f) }
@@ -83,6 +96,17 @@ fun StylesSample(navigator: Navigator) {
             circleRadius(radius = radiusSetting)
             circleOpacity(opacity = opacitySetting)
             circleColor(color = colorSetting)
+          }
+        }
+
+        GeoJsonSource(
+          id = "portland",
+          json = PORTLAND_POLYGON,
+        ) {
+          FillLayer(id = "portland_fill") {
+            fillColor(Color.Magenta)
+            fillOpacity(0.2f)
+            fillOutlineColor(Color.Magenta)
           }
         }
       }
@@ -133,6 +157,11 @@ fun StylesSample(navigator: Navigator) {
         )
       }
     }
+
+    LaunchedEffect(bounds) {
+      delay(1)
+      mapState.easeTo(CameraUpdateFactory.newLatLngBounds(LatLngBounds.from(bounds[3], bounds[2], bounds[1], bounds[0]), 0))
+    }
   }
 }
 
@@ -181,3 +210,74 @@ private fun SliderColorControl(
 }
 
 private fun colorForHue(hue: Float) = Color.hsv(hue, 0.5f, 0.8f)
+
+const val PORTLAND_POLYGON = """
+  {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -122.67751732080666,
+              45.556570078537476
+            ],
+            [
+              -122.67846976800969,
+              45.54772368780317
+            ],
+            [
+              -122.67491764780198,
+              45.54391954196217
+            ],
+            [
+              -122.67442658084583,
+              45.556504162340616
+            ],
+            [
+              -122.67751732080666,
+              45.556570078537476
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      }
+    }
+  ]
+}
+"""
+
+const val PORTLAND_BOUNDS = """
+  {
+        "coordinates": [
+          [
+            [
+              -122.71033342864496,
+              45.556883078880986
+            ],
+            [
+              -122.71033342864496,
+              45.489529017727676
+            ],
+            [
+              -122.63293821436281,
+              45.489529017727676
+            ],
+            [
+              -122.63293821436281,
+              45.556883078880986
+            ],
+            [
+              -122.71033342864496,
+              45.556883078880986
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      }
+"""
+
+private val PORTLAND_BOUNDS_GEOMETRY = Polygon.fromJson(PORTLAND_BOUNDS)
