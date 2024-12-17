@@ -94,18 +94,25 @@ public class MapState(
     bearing: Double = this.bearing,
     tilt: Double = this.tilt,
     duration: Duration = 300.milliseconds,
+  ) {
+    val cameraUpdate = object : CameraUpdate {
+      override fun getCameraPosition(maplibreMap: MapLibreMap): CameraPosition =
+        CameraPosition.Builder()
+          .target(target)
+          .zoom(zoom)
+          .bearing(bearing)
+          .tilt(tilt)
+          .build()
+    }
+
+    easeTo(cameraUpdate, duration)
+  }
+
+  public suspend fun easeTo(
+    cameraUpdate: CameraUpdate,
+    duration: Duration = 300.milliseconds,
   ): Unit = withMap { map ->
     doAnimation(map) {
-      val cameraUpdate = object : CameraUpdate {
-        override fun getCameraPosition(maplibreMap: MapLibreMap): CameraPosition =
-          CameraPosition.Builder()
-            .target(target)
-            .zoom(zoom)
-            .bearing(bearing)
-            .tilt(tilt)
-            .build()
-      }
-
       map.easeCamera(cameraUpdate, duration.inWholeMilliseconds.toInt())
     }
   }

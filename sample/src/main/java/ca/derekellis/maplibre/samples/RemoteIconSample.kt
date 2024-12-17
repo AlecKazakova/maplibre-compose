@@ -1,21 +1,26 @@
 package ca.derekellis.maplibre.samples
 
 import android.graphics.BitmapFactory
+import android.graphics.PointF
+import android.graphics.RectF
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import ca.derekellis.maplibre.DemoStyle
 import ca.derekellis.maplibre.MapLibreMap
 import ca.derekellis.maplibre.Navigator
+import ca.derekellis.maplibre.OnMapClick
 import ca.derekellis.maplibre.OnStyleImageMissing
 import ca.derekellis.maplibre.R
 import ca.derekellis.maplibre.Screen
@@ -35,6 +40,11 @@ import kotlinx.coroutines.CoroutineStart.UNDISPATCHED
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.expressions.Expression.eq
+import org.maplibre.android.style.expressions.Expression.id
+import org.maplibre.android.style.expressions.Expression.literal
+import org.maplibre.android.style.expressions.Expression.switchCase
+import org.maplibre.geojson.Feature
 
 @Composable
 fun RemoteIconSample(navigator: Navigator) {
@@ -71,6 +81,8 @@ fun RemoteIconSample(navigator: Navigator) {
         contentPadding = innerPadding,
         logoPadding = PaddingValues(4.dp),
       ) {
+        var selectedId by remember { mutableIntStateOf(-1) }
+
         OnStyleImageMissing { imageId ->
           // Set a default placeholder
           style.addImage(imageId, defaultIconBitmap)
@@ -89,10 +101,37 @@ fun RemoteIconSample(navigator: Navigator) {
           }
         }
 
+        OnMapClick { point ->
+          val pointf: PointF = map.projection.toScreenLocation(point)
+          val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
+          val featureList: List<Feature> = map.queryRenderedFeatures(rectF, "circles")
+          featureList.firstOrNull()?.let {
+            selectedId = it.id()?.toInt() ?: -1
+            return@OnMapClick true
+          }
+
+          selectedId = -1
+          return@OnMapClick false
+        }
+
         GeoJsonSource(id = "data", geojson = TEST_DATA) {
           CircleLayer(id = "circles") {
-            circleColor(Color.White)
-            circleRadius(25f)
+            circleColor(
+              switchCase(
+                eq(id(), literal(selectedId)),
+                literal("#FFFF00"),
+                literal("#FFFFFF"),
+              ),
+            )
+//            circleColor(Color.White)
+//            circleRadius(25f)
+            circleRadius(
+              switchCase(
+                eq(id(), literal(selectedId)),
+                literal(30f),
+                literal(25f),
+              ),
+            )
           }
           SymbolLayer(id = "symbols") {
             iconImage(Expression.get("icon-url"))

@@ -7,6 +7,7 @@ import ca.derekellis.maplibre.MapDsl
 import ca.derekellis.maplibre.MapScope
 import ca.derekellis.maplibre.compose.MapNodeApplier
 import ca.derekellis.maplibre.compose.SourceNode
+import org.maplibre.geojson.FeatureCollection
 import java.net.URI
 import org.maplibre.android.style.sources.GeoJsonSource as SdkGeoJsonSource
 
@@ -52,8 +53,33 @@ public fun MapScope.GeoJsonSource(
     factory = { SourceNode(id, SdkGeoJsonSource(id, geojson)) },
     update = {
       // TODO: Update ID
-      set(style) {
+      set(geojson) {
         style.getSourceAs<SdkGeoJsonSource>(id)?.setGeoJson(geojson)
+      }
+    },
+    content = { scope.layers() },
+  )
+}
+
+@Composable
+@MapDsl
+public fun MapScope.GeoJsonSource(
+  id: String,
+  featureCollection: FeatureCollection,
+  layers: @Composable SourceScope.() -> Unit,
+) {
+  val scope = remember {
+    object : SourceScope, MapScope by this {
+      override val sourceId: String get() = id
+    }
+  }
+
+  ComposeNode<SourceNode, MapNodeApplier>(
+    factory = { SourceNode(id, SdkGeoJsonSource(id, featureCollection)) },
+    update = {
+      // TODO: Update ID
+      set(featureCollection) {
+        style.getSourceAs<SdkGeoJsonSource>(id)?.setGeoJson(featureCollection)
       }
     },
     content = { scope.layers() },
