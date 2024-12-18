@@ -106,8 +106,6 @@ internal fun CoroutineScope.applySources(map: MapLibreMap, style: Style, mapView
   val mapScope = object : MapScope {
     override val map: MapLibreMap = map
 
-    override val style: Style = style
-
     override val mapViewCallbacks: MapViewCallbacks = mapViewCallbacks
   }
 

@@ -29,7 +29,7 @@ public fun MapScope.GeoJsonSource(
     update = {
       // TODO: Update ID
       set(uri) {
-        style.getSourceAs<SdkGeoJsonSource>(id)?.setUri(uri)
+        map.getStyle { it.getSourceAs<SdkGeoJsonSource>(id)?.setUri(uri) }
       }
     },
     content = { scope.layers() },
@@ -54,7 +54,7 @@ public fun MapScope.GeoJsonSource(
     update = {
       // TODO: Update ID
       set(geojson) {
-        style.getSourceAs<SdkGeoJsonSource>(id)?.setGeoJson(geojson)
+        map.getStyle { it.getSourceAs<SdkGeoJsonSource>(id)?.setGeoJson(geojson) }
       }
     },
     content = { scope.layers() },
@@ -79,7 +79,7 @@ public fun MapScope.GeoJsonSource(
     update = {
       // TODO: Update ID
       set(featureCollection) {
-        style.getSourceAs<SdkGeoJsonSource>(id)?.setGeoJson(featureCollection)
+        map.getStyle { it.getSourceAs<SdkGeoJsonSource>(id)?.setGeoJson(featureCollection) }
       }
     },
     content = { scope.layers() },

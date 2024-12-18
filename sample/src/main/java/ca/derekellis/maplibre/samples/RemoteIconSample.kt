@@ -85,7 +85,7 @@ fun RemoteIconSample(navigator: Navigator) {
 
         OnStyleImageMissing { imageId ->
           // Set a default placeholder
-          style.addImage(imageId, defaultIconBitmap)
+          map.getStyle { it.addImage(imageId, defaultIconBitmap) }
 
           scope.launch(start = UNDISPATCHED) {
             val request = ImageRequest.Builder(context)
@@ -97,7 +97,7 @@ fun RemoteIconSample(navigator: Navigator) {
             val bitmap = result.image?.toBitmap() ?: return@launch
             bitmap.density = context.resources.displayMetrics.densityDpi
 
-            style.addImageAsync(imageId, bitmap)
+            map.getStyle { it.addImageAsync(imageId, bitmap) }
           }
         }
 

@@ -27,10 +27,15 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 
+private sealed interface StyleWrapper {
+  data class Uri(val uri: String) : StyleWrapper
+  data class Builder(val builder: Style.Builder) : StyleWrapper
+}
+
 @Composable
-public fun MapLibreMap(
+private fun MapLibreMapImpl(
   modifier: Modifier = Modifier,
-  style: String? = null,
+  style: StyleWrapper? = null,
   state: MapState = rememberMapState(),
   contentPadding: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
   logoPadding: PaddingValues = computeLogoPadding(contentPadding),
@@ -54,7 +59,11 @@ public fun MapLibreMap(
   LaunchedEffect(mapRef, style) {
     val map = mapRef ?: return@LaunchedEffect
 
-    map.setStyle(style)
+    when (style) {
+      is StyleWrapper.Builder -> map.setStyle(style.builder)
+      is StyleWrapper.Uri -> map.setStyle(style.uri)
+      else -> {}
+    }
     map.getStyle { styleRef = it }
   }
 
@@ -98,6 +107,52 @@ public fun MapLibreMap(
       }.apply { manageLifecycle() }
     },
     update = { _ -> },
+  )
+}
+
+@Composable
+public fun MapLibreMap(
+  modifier: Modifier = Modifier,
+  style: String,
+  state: MapState = rememberMapState(),
+  contentPadding: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
+  logoPadding: PaddingValues = computeLogoPadding(contentPadding),
+  attributionPadding: PaddingValues = computeAttributionPadding(logoPadding),
+  compassPadding: PaddingValues = computeCompassPadding(contentPadding),
+  content: @Composable MapScope.() -> Unit = {},
+) {
+  MapLibreMapImpl(
+    modifier = modifier,
+    style = StyleWrapper.Uri(style),
+    state = state,
+    contentPadding = contentPadding,
+    logoPadding = logoPadding,
+    attributionPadding = attributionPadding,
+    compassPadding = compassPadding,
+    content = content,
+  )
+}
+
+@Composable
+public fun MapLibreMap(
+  modifier: Modifier = Modifier,
+  style: Style.Builder? = null,
+  state: MapState = rememberMapState(),
+  contentPadding: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
+  logoPadding: PaddingValues = computeLogoPadding(contentPadding),
+  attributionPadding: PaddingValues = computeAttributionPadding(logoPadding),
+  compassPadding: PaddingValues = computeCompassPadding(contentPadding),
+  content: @Composable MapScope.() -> Unit = {},
+) {
+  MapLibreMapImpl(
+    modifier = modifier,
+    style = style?.let { StyleWrapper.Builder(it) },
+    state = state,
+    contentPadding = contentPadding,
+    logoPadding = logoPadding,
+    attributionPadding = attributionPadding,
+    compassPadding = compassPadding,
+    content = content,
   )
 }
 
