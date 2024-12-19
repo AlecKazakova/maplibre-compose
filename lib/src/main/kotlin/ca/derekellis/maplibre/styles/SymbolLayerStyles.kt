@@ -216,6 +216,54 @@ public fun SymbolLayerScope.iconOffset(expression: Expression) {
   layer.withProperties(PropertyFactory.iconOffset(expression))
 }
 
+@Composable
+@LayerDsl
+public fun SymbolLayerScope.textField(text: String) {
+  layer.withProperties(PropertyFactory.textField(text))
+}
+
+@Composable
+@LayerDsl
+public fun SymbolLayerScope.textField(expression: Expression) {
+  layer.withProperties(PropertyFactory.textField(expression))
+}
+
+@Composable
+@LayerDsl
+public fun SymbolLayerScope.textColor(expression: Expression) {
+  layer.withProperties(PropertyFactory.textColor(expression))
+}
+
+@Composable
+@LayerDsl
+public fun SymbolLayerScope.textColor(@ColorInt color: Int) {
+  layer.withProperties(PropertyFactory.textColor(color))
+}
+
+@Composable
+@LayerDsl
+public fun SymbolLayerScope.textColor(color: String) {
+  layer.withProperties(PropertyFactory.textColor(color))
+}
+
+@Composable
+@LayerDsl
+public fun SymbolLayerScope.textColor(color: Color) {
+  layer.withProperties(PropertyFactory.textColor(color.toArgb()))
+}
+
+@Composable
+@LayerDsl
+public fun SymbolLayerScope.textSize(expression: Expression) {
+  layer.withProperties(PropertyFactory.textSize(expression))
+}
+
+@Composable
+@LayerDsl
+public fun SymbolLayerScope.textSize(value: Float) {
+  layer.withProperties(PropertyFactory.textSize(value))
+}
+
 public enum class IconAnchor(public val value: String) {
   Center("center"),
   Left("left"),

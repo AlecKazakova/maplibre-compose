@@ -1,8 +1,12 @@
 package ca.derekellis.maplibre
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -27,6 +31,19 @@ public class MapState(
   private var initialPadding: DoubleArray = doubleArrayOf(0.0, 0.0, 0.0, 0.0),
 ) {
   private val mapState = MutableStateFlow<MapLibreMap?>(null)
+
+  internal fun save(): Bundle {
+    return Bundle().apply {
+      mapState.value?.let { mapState ->
+        putDouble("mapstate_lat", mapState.cameraPosition.target!!.latitude)
+        putDouble("mapstate_long", mapState.cameraPosition.target!!.longitude)
+        putDouble("mapstate_zoom", mapState.cameraPosition.zoom)
+        putDouble("mapstate_bearing", mapState.cameraPosition.bearing)
+        putDouble("mapstate_tilt", mapState.cameraPosition.tilt)
+        putDoubleArray("mapstate_padding", mapState.cameraPosition.padding)
+      }
+    }
+  }
 
   private suspend inline fun withMap(block: (MapLibreMap) -> Unit) {
     val map = mapState.value ?: mapState.filterNotNull().first()
@@ -157,5 +174,18 @@ public fun rememberMapState(
     )
   }
 
-  return remember { MapState(target, zoom, bearing, tilt, paddingValues) }
+  return rememberSaveable(saver = Saver(
+    save = { mapState -> mapState.save() },
+    restore = { bundle: Bundle ->
+        MapState(
+          initialTarget = LatLng(bundle.getDouble("mapstate_lat", target.latitude), bundle.getDouble("mapstate_long", target.longitude)),
+          initialZoom = bundle.getDouble("mapstate_zoom", zoom),
+          initialBearing = bundle.getDouble("mapstate_bearing", bearing),
+          initialTilt = bundle.getDouble("mapstate_tilt", tilt),
+          initialPadding =
+          if (bundle.containsKey("mapstate_padding")) bundle.getDoubleArray("mapstate_padding")!!
+          else paddingValues
+        )
+    }
+  )) { MapState(target, zoom, bearing, tilt, paddingValues) }
 }
